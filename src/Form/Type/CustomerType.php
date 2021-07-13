@@ -27,7 +27,7 @@ class CustomerType extends AbstractType{
     }
 
     public function configureOptions(OptionsResolver $resolver):void{
-        $resolver->serDefaults([
+        $resolver->setDefaults([
             'data_class' => Customer::class,
         ]);
     }
