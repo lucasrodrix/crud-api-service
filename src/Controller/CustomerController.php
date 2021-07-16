@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Form\Type\CustomerType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CustomerController extends AbstractController
+class CustomerController extends AbstractApiController
 {
     public function indexAction(Request $request): Response
     {
@@ -16,6 +16,21 @@ class CustomerController extends AbstractController
     }
 
     public function createAction(Request $request): Response{
+        $form = $this->buildForm(type: CustomerType::class);
+        $form->handleRequest($request);
+
+        if(!$form->isSubmitted() || !$form->isValid()){
+            //throw exception
+            print 'error';
+            exit;
+        }
+
+        /**@var Customer $customer */
+        $customer = $form->getData();
+
+        $this->getDoctrine()->getManager()->persist($customer);
+        $this->getDoctrine()->getManager()->flush();
+
         return $this->json(data:'');
     }
 }
