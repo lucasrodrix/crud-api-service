@@ -21,7 +21,7 @@ class CustomerController extends AbstractApiController
 
         if(!$form->isSubmitted() || !$form->isValid()){
             //throw exception
-            print 'error';
+            print 'Form is not Valid';
             exit;
         }
 
@@ -31,6 +31,6 @@ class CustomerController extends AbstractApiController
         $this->getDoctrine()->getManager()->persist($customer);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->json(data:'');
+        return $this->json($customer);
     }
 }
