@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Cart;
+use App\Entity\Customer;
+use App\Form\Type\CartType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+class CartController extends AbstractApiController
+{
+    public function showAction(Request $request): Response
+    {
+        $customerId = $request->get('id');
+        
+        $customer = $this->getDoctrine()->getRepository(persistentObject: Customer::class)->findOneBy(['id' => $customerId]);
+
+        if(!$customer){
+            throw new NotFoundHttpException('Customer not found');
+        }
+
+        $cart = $this->getDoctrine()->getRepository(persistentObject: Cart::class)->findOneBy(['customer' => $customer]);
+
+        if(!$cart){
+            throw new NotFoundHttpException('Cart is not exist for ths customer');
+        }
+
+        return $this->respond($cart);
+    }
+
+    public function createAction(Request $request): Response{
+        
+        $form = $this->buildForm(type: CartType::class);
+        $form->handleRequest($request);
+
+        if(!$form->isSubmitted() || !$form->isValid()){
+            return $this->respond($form, statusCode:Response::HTTP_BAD_REQUEST);
+        }
+
+        /**@var Cart $cart */
+        $cart = $form->getData();
+
+        $this->getDoctrine()->getManager()->persist($cart);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->respond($cart);
+    }
+}
