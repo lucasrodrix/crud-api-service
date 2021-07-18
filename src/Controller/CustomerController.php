@@ -20,9 +20,7 @@ class CustomerController extends AbstractApiController
         $form->handleRequest($request);
 
         if(!$form->isSubmitted() || !$form->isValid()){
-            //throw exception
-            print 'Form is not Valid';
-            exit;
+            return $this->respond($form, statusCode:Response::HTTP_BAD_REQUEST);
         }
 
         /**@var Customer $customer */
@@ -31,6 +29,6 @@ class CustomerController extends AbstractApiController
         $this->getDoctrine()->getManager()->persist($customer);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->json($customer);
+        return $this->respond($customer);
     }
 }
